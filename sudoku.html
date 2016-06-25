@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="sudoku.css">
+		<script src="sudoku.js"></script>
+	</head>
+	<body>
+		<table style="margin: auto;">
+			<tr><td colspan=2><table id="board"></table></td></tr>
+			<tr>
+				<td id="string_prompt">Text Input</td>
+				<td id="string_data">
+					<input id="string_input" type="text">
+				</td>
+			</tr>
+			<tr><td colspan=2, id="solve">SOLVE</td></tr>
+			<tr><td colspan=2, id="help">HELP</td></tr>
+		</table>
+		
+		<script>
+			createBoard();
+			create_solve_button();
+			create_help_button();
+		</script>
+	</body>
+</html>
