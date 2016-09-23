@@ -1,4 +1,8 @@
 "use strict";
+
+// These are examples of acceptable sudoku strings. The string should be all 9
+// rows of the puzzle concatenated from top to bottom, with '.' representing an
+// empty space.
 // ..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..
 // 4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......
 // 85...24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4.
@@ -32,7 +36,7 @@ function createBoard()
 {
 	var board = document.getElementById("board");
 	board.style.backgroundColor = "darkgray";
-	
+
 	// Create a queue of indeces to assign inputs to.
 	var indeces = [];
 	for(var i = 1; i <= 7; i += 3)
@@ -40,17 +44,17 @@ function createBoard()
 			for(var k = i; k < i+3; k++)
 				for(var l = j; l < j+3; l++)
 					indeces.push(k.toString() + l.toString());
-	
+
 	// Helper function to create 3x3 sub-board.
 	function createSubBoard()
 	{
 		var subBoard = document.createElement("table");
 		subBoard.className = "subBoard";
-		
+
 		var subBoardIndeces = [];
 		for(var i = 0; i < 9; i++)
 			subBoardIndeces.push(indeces.shift());
-		
+
 		for(var i = 0; i < 3; i++)
 		{
 			var subRow = document.createElement("tr");
@@ -70,7 +74,7 @@ function createBoard()
 		}
 		return subBoard;
 	}
-	
+
 	// Create a 3x3 table of sub-boards.
 	for(var i = 0; i < 3; i++)
 	{
@@ -83,22 +87,22 @@ function createBoard()
 		}
 		board.appendChild(row);
 	}
-	
+
 	// Finish building the lists of peers of each cell.
 	Object.keys(cells).forEach(function(index)
 	{
 		var new_peers = new Set(cells[index].peers);
-		
+
 		var row = index[0];
 		for(var j = 1; j <= 9; j++)
 			new_peers.add(row + j.toString());
-		
+
 		var col = index[1];
 		for(var i = 1; i <= 9; i++)
 			new_peers.add(i.toString() + col);
-		
+
 		new_peers.delete(index);
-		
+
 		cells[index].peers = Array.from(new_peers);
 	});
 }
@@ -130,11 +134,11 @@ function create_solve_button()
 			}
 		return true;
 	}
-	
+
 	// Set the button to its initial state.
 	var solve_button = document.getElementById("solve");
 	solve_button.style.backgroundColor = "lightgreen";
-	
+
 	// The button chagnes to a lighter color while it is pressed.
 	solve_button.addEventListener("mousedown", function()
 	{
@@ -143,7 +147,7 @@ function create_solve_button()
 		else
 			this.style.backgroundColor = "lightgray";
 	});
-	
+
 	// The button returns to its normal color after the mouse leaves it.
 	solve_button.addEventListener("mouseleave", function()
 	{
@@ -152,7 +156,7 @@ function create_solve_button()
 		else
 			this.style.backgroundColor = "darkgray";
 	});
-	
+
 	// In the "solve" state, the puzzle is solved when the button is pressed.
 	// In the "reset" state, the board is returned to its original state.
 	solve_button.addEventListener("mouseup", function()
@@ -182,11 +186,11 @@ function create_solve_button()
 				this.style.backgroundColor = "lightgreen";
 				return;
 			}
-			
+
 			this.style.backgroundColor = "darkgray";
 			this.innerHTML = "RESET";
-			
-			
+
+
 		}
 		else
 		{
@@ -197,7 +201,7 @@ function create_solve_button()
 				cells[index].input.style.backgroundColor = "lightgray";
 			});
 			document.getElementById("string_input").value = "";
-			
+
 			this.style.backgroundColor = "lightgreen";
 			this.innerHTML = "SOLVE";
 		}
@@ -225,8 +229,8 @@ function solve()
 	{
 		// Queue of assignments to be made.
 		var assignment_queue = [{index: index, val: val}];
-		
-		// Remove a value from all peers of a cell. 
+
+		// Remove a value from all peers of a cell.
 		// If a cell's domain is reduced to zero, return false.
 		// If a cell's domain is reduced to size 1, queue an assignment to that cell.
 		function constrain(index, val)
@@ -244,7 +248,7 @@ function solve()
 			});
 			return success;
 		}
-		
+
 		// Make assignments until the assignment queue is empty.
 		while(assignment_queue.length > 0)
 		{
@@ -257,7 +261,7 @@ function solve()
 		}
 		return state;
 	}
-	
+
 	// Perform a greedy search of all possible assignment sequences until a solution is found.
 	function search()
 	{
@@ -266,7 +270,7 @@ function solve()
 		{
 			// Pop a state from the stack.
 			var state = states.shift();
-			
+
 			// Goal test.
 			var goal = true;
 			var goal_keys = Object.keys(state);
@@ -278,7 +282,7 @@ function solve()
 				}
 			if(goal)
 				return state;
-			
+
 			// Find theindex of the unassigned cell with the smallest domain.
 			var min = 9;
 			var i = null;
@@ -292,7 +296,7 @@ function solve()
 			});
 			if(i == null)
 				i = "11";
-			
+
 			// Perform all possible assignments to that cell and push those assignments onto the stack.
 			Array.from(state[i].domain).forEach(function(val)
 			{
@@ -304,7 +308,7 @@ function solve()
 		}
 		return null;
 	}
-	
+
 	// Perform initial assignments.
 	var original_inputs = [];
 	Object.keys(cells).forEach(function(index)
@@ -315,7 +319,7 @@ function solve()
 			original_inputs.push(cells[index].input);
 		}
 	});
-	
+
 	// Goal test.
 	var goal = true;
 	var cell_keys = Object.keys(cells);
@@ -325,14 +329,14 @@ function solve()
 			goal = false;
 			break;
 		}
-	
+
 	// Solve the puzzle.
 	var solution = undefined;
 	if(!goal)
 		solution = search();
 	else
 		solution = cells;
-	
+
 	// Display the results.
 	var success = true;
 	if(solution == null)
@@ -352,24 +356,3 @@ function solve()
 	});
 	return success;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
